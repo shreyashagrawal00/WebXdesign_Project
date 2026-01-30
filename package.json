@@ -1,0 +1,16 @@
+{
+  "name": "queuesmart-root",
+  "version": "1.0.0",
+  "description": "Root script for deployment",
+  "scripts": {
+    "postinstall": "cd frontend && npm install && cd ../backend && npm install",
+    "build": "cd frontend && npm run build",
+    "start": "node backend/server.js"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

@@ -43,7 +43,7 @@ body::before {
   height: 100%;
   background-image:
     linear-gradient(to bottom, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.45)),
-    url('/assets/bg-hd.jpg');
+    url('/assets/parliament.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
