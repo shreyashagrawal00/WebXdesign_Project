@@ -171,19 +171,19 @@ const Booking = () => {
                     'Get E-Aadhaar': 'Download your E-Aadhaar card online',
 
                     // PAN
-                    'Verify PAN Status': 'Check the validity and status of your Permanent Account Number',
+                    'View PAN Status': 'Check the validity and status of your Permanent Account Number',
                     'Download E-PAN': 'Get a digital copy of your PAN card instantly',
                     'Correction in PAN': 'Apply for changes or corrections in PAN details',
                     'New PAN Application': 'Apply for a new Permanent Account Number',
 
                     // Passport
-                    'Track Application Status': 'Track the current status of your passport application',
+                    'View Passport Status': 'Track the current status of your passport application',
                     'Appointment Availability': 'Check available appointment slots at Passport Seva Kendras',
                     'Re-issue Passport': 'Apply for re-issue of passport due to expiry/changes',
                     'Fresh Passport Application': 'Apply for a new passport for the first time',
 
                     // Driving License
-                    'Know Your DL Status': 'Check the current status of your driving license',
+                    'View DL Status': 'Check the current status of your driving license',
                     'Download Digital DL': 'Download a soft copy of your driving license',
                     'DL Renewal': 'Apply for renewal of your expired driving license',
                     'New Driving License': 'Apply for a permanent driving license'
@@ -191,17 +191,17 @@ const Booking = () => {
                   return descriptions[actionName] || '';
                 };
 
+                // Robust check: Any action with these keywords is an Instant Service (OTP based)
                 const isInstantService = [
-                  'Verify Aadhaar Number', 'Get E-Aadhaar',
-                  'Verify PAN Status', 'Download E-PAN',
-                  'Track Application Status', 'Appointment Availability',
-                  'Know Your DL Status', 'Download Digital DL'
-                ].includes(action);
+                  'Status', 'Download', 'Verify', 'Track', 'Get', 'Availability', 'View'
+                ].some(keyword => action.includes(keyword));
 
                 return (
                   <div
                     key={action}
                     onClick={() => {
+                      console.log('Clicked Action:', action);
+                      console.log('Is Instant?', isInstantService);
                       setFormData({ ...formData, action });
                       if (isInstantService) {
                         setShowInstantService(true);

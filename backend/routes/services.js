@@ -38,19 +38,19 @@ router.post('/seed', async (req, res) => {
         name: 'PAN Card',
         department: 'Official Identity Documents',
         description: 'Application and corrections',
-        actions: ['Verify PAN Status', 'Download E-PAN', 'Correction in PAN', 'New PAN Application']
+        actions: ['View PAN Status', 'Download E-PAN', 'Correction in PAN', 'New PAN Application']
       },
       {
         name: 'Passport Service',
         department: 'Official Identity Documents',
         description: 'New passport and re-issue',
-        actions: ['Track Application Status', 'Appointment Availability', 'Re-issue Passport', 'Fresh Passport Application']
+        actions: ['View Passport Status', 'Appointment Availability', 'Re-issue Passport', 'Fresh Passport Application']
       },
       {
         name: 'Driving License',
         department: 'Official Identity Documents',
         description: 'License services and tests',
-        actions: ['Know Your DL Status', 'Download Digital DL', 'DL Renewal', 'New Driving License']
+        actions: ['View DL Status', 'Download Digital DL', 'DL Renewal', 'New Driving License']
       },
 
       // Healthcare

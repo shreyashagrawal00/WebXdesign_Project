@@ -1,5 +1,6 @@
 import React from 'react';
 import { useQueue } from '../context/QueueContext';
+import axios from 'axios';
 import { Clock, Users, Calendar, AlertCircle, RefreshCw } from 'lucide-react';
 
 const UserDashboard = () => {
@@ -118,18 +119,41 @@ const UserDashboard = () => {
                       </p>
                     </div>
                   </div>
-                  <div style={{ display: 'flex', gap: '1rem' }}>
+                  <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                     <span style={{
                       fontSize: '0.75rem',
                       padding: '0.25rem 0.75rem',
                       borderRadius: '1rem',
-                      background: app.status === 'waiting' ? 'rgba(245, 158, 11, 0.1)' : 'rgba(16, 185, 129, 0.1)',
-                      color: app.status === 'waiting' ? 'var(--warning)' : 'var(--success)',
+                      background: app.status === 'waiting' ? 'rgba(245, 158, 11, 0.1)' : (app.status === 'cancelled' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(16, 185, 129, 0.1)'),
+                      color: app.status === 'waiting' ? 'var(--warning)' : (app.status === 'cancelled' ? 'var(--danger)' : 'var(--success)'),
                       border: '1px solid currentColor',
                       textTransform: 'uppercase'
                     }}>
                       {app.status}
                     </span>
+
+                    {app.status === 'waiting' && (
+                      <button
+                        className="btn-primary"
+                        style={{ padding: '0.5rem 1rem', background: 'var(--danger)', fontSize: '0.75rem' }}
+                        onClick={async () => {
+                          if (window.confirm('Are you sure you want to cancel this appointment?')) {
+                            try {
+                              // We need to refresh data after cancellation, so using a force reload or re-fetch would be ideal.
+                              // For now, assuming axios is imported or available via context.
+                              await axios.post(`http://localhost:5001/api/appointments/cancel/${app._id}`, {}, {
+                                headers: { 'x-auth-token': localStorage.getItem('token') }
+                              });
+                              window.location.reload(); // Simple reload to refresh state
+                            } catch (err) {
+                              alert('Failed to cancel appointment');
+                            }
+                          }
+                        }}
+                      >
+                        Cancel
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}
