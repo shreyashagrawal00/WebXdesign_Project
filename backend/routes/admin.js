@@ -91,4 +91,23 @@ router.get('/slots', adminAuth, async (req, res) => {
   }
 });
 
+// Cancel Appointment (Admin Force Cancel)
+router.post('/appointments/cancel/:id', adminAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updated = await db.updateAppointment(id, { status: 'cancelled' });
+
+    if (!updated) return res.status(404).json({ message: 'Appointment not found' });
+
+    // Notify clients of update (optional but good)
+    const { io } = require('../server');
+    // We would need the slotId to emit to the room, but updated appointment usually has it.
+    // For now simple response is enough, frontend will refresh.
+
+    res.json({ message: 'Appointment cancelled by admin' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;

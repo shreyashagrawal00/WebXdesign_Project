@@ -221,10 +221,28 @@ const AdminDashboard = () => {
                         <td style={{ padding: '0.75rem 0', fontWeight: 600 }}>#{app.tokenNumber}</td>
                         <td>{app.userId?.name}</td>
                         <td style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>{app.action}</td>
-                        <td>
+                        <td style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                           <span style={{ fontSize: '0.7rem', padding: '0.1rem 0.5rem', borderRadius: '1rem', background: 'rgba(245, 158, 11, 0.1)', color: 'var(--warning)', border: '1px solid currentColor' }}>
                             {app.status}
                           </span>
+                          {app.status === 'waiting' && (
+                            <button
+                              onClick={async () => {
+                                if (window.confirm(`Cancel appointment for ${app.userId?.name}?`)) {
+                                  try {
+                                    await axios.post(`http://localhost:5001/api/admin/appointments/cancel/${app._id}`, {}, {
+                                      headers: { 'x-auth-token': token }
+                                    });
+                                    fetchAdminData(); // Refresh list
+                                  } catch (err) { alert('Failed to cancel'); }
+                                }
+                              }}
+                              style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '0 0.5rem' }}
+                              title="Cancel Appointment"
+                            >
+                              ✕
+                            </button>
+                          )}
                         </td>
                       </tr>
                     ))}

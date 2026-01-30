@@ -65,8 +65,22 @@ app.post('/api/admin/next-legacy', (req, res) => {
 });
 
 const PORT = process.env.PORT || 5001;
-server.listen(PORT, () => {
+server.listen(PORT, async () => {
   console.log(`Server running on port ${PORT}`);
+
+  // Auto-seed database if empty
+  const db = require('./mockDb');
+  const services = await db.getServices();
+  if (services.length === 0) {
+    console.log('Database empty, seeding initial data...');
+    try {
+      const axios = require('axios');
+      await axios.post(`http://localhost:${PORT}/api/services/seed`);
+      console.log('Database seeded successfully');
+    } catch (err) {
+      console.error('Error seeding database:', err.message);
+    }
+  }
 });
 
 // Export io to use in other routes
