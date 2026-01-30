@@ -84,16 +84,16 @@ const Home = () => {
         />
       </div>
 
-      <h1 style={{ fontSize: '4rem', marginBottom: '1.25rem', background: 'linear-gradient(to right, #431407, #064e3b)', webkitBackgroundClip: 'text', webkitTextFillColor: 'transparent', lineHeight: 1.1 }}>
+      <h1 className="hero-title">
         Skip the Line, <br />Save Your Time.
       </h1>
-      <p style={{ color: '#0f172a', fontSize: '1.25rem', maxWidth: '600px', margin: '0 auto 4rem', fontWeight: 600 }}>
+      <p className="hero-text">
         Select a service below to book your appointment instantly and track your turn live.
       </p>
 
       {/* Official Identity Documents Section */}
       <div style={{ marginBottom: '5rem' }}>
-        <h2 style={{ fontSize: '2rem', marginBottom: '2rem', textAlign: 'left', borderLeft: '4px solid var(--primary)', paddingLeft: '1rem' }}>
+        <h2 className="section-title" style={{ borderLeft: '4px solid var(--primary)' }}>
           Official Identity Documents
         </h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
@@ -103,7 +103,7 @@ const Home = () => {
 
       {/* Healthcare Section */}
       <div style={{ marginBottom: '5rem' }}>
-        <h2 style={{ fontSize: '2rem', marginBottom: '2rem', textAlign: 'left', borderLeft: '4px solid var(--secondary)', paddingLeft: '1rem' }}>
+        <h2 className="section-title" style={{ borderLeft: '4px solid var(--secondary)' }}>
           Healthcare & Wellness
         </h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>

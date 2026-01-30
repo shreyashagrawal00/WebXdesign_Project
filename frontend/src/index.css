@@ -139,3 +139,46 @@ h3 {
 .animate-fade {
   animation: fadeIn 0.4s ease forwards;
 }
+
+/* Responsive Helpers */
+.hero-title {
+  font-size: 2.5rem;
+  margin-bottom: 1.25rem;
+  background: linear-gradient(to right, #431407, #064e3b);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1.1;
+  font-weight: 700;
+}
+
+.hero-text {
+  color: #0f172a;
+  font-size: 1rem;
+  max-width: 600px;
+  margin: 0 auto 4rem;
+  font-weight: 600;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  text-align: left;
+  padding-left: 1rem;
+}
+
+/* Tablet & Desktop */
+@media (min-width: 768px) {
+  .hero-title {
+    font-size: 4rem;
+  }
+
+  .hero-text {
+    font-size: 1.25rem;
+  }
+
+  .section-title {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+  }
+}
