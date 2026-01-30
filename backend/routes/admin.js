@@ -43,6 +43,51 @@ router.get('/appointments/all', adminAuth, async (req, res) => {
     res.json(appointments);
   } catch (err) {
     res.status(500).json({ error: err.message });
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Update Slot Timings (Admin) - Deprecated in favor of individual editing but kept for backward compat
+router.post('/slots/update', adminAuth, async (req, res) => {
+  try {
+    const { serviceId, startTime, endTime } = req.body;
+    await db.updateServiceSlotTimes(serviceId, startTime, endTime);
+    res.json({ message: 'Slot timings updated successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Add New Slot
+router.post('/slots/add', adminAuth, async (req, res) => {
+  try {
+    const { serviceId, startTime, endTime } = req.body;
+    const newSlot = await db.addSlot(serviceId, startTime, endTime);
+    res.json(newSlot);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Delete Slot
+router.post('/slots/delete/:id', adminAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deleted = await db.deleteSlot(id);
+    if (!deleted) return res.status(404).json({ message: 'Slot not found' });
+    res.json({ message: 'Slot deleted' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get ALL Slots
+router.get('/slots', adminAuth, async (req, res) => {
+  try {
+    const slots = await db.getAllSlots(); // Need to add this to mockDb first
+    res.json(slots);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 

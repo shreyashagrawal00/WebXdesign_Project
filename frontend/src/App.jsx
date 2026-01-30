@@ -84,10 +84,10 @@ const Home = () => {
         />
       </div>
 
-      <h1 style={{ fontSize: '4rem', marginBottom: '1.25rem', background: 'linear-gradient(to right, #ff6b35, #10b981)', webkitBackgroundClip: 'text', webkitTextFillColor: 'transparent', lineHeight: 1.1 }}>
+      <h1 style={{ fontSize: '4rem', marginBottom: '1.25rem', background: 'linear-gradient(to right, #9a3412, #166534)', webkitBackgroundClip: 'text', webkitTextFillColor: 'transparent', lineHeight: 1.1 }}>
         Skip the Line, <br />Save Your Time.
       </h1>
-      <p style={{ color: 'var(--text-muted)', fontSize: '1.25rem', maxWidth: '600px', margin: '0 auto 4rem' }}>
+      <p style={{ color: '#334155', fontSize: '1.25rem', maxWidth: '600px', margin: '0 auto 4rem', fontWeight: 500 }}>
         Select a service below to book your appointment instantly and track your turn live.
       </p>
 

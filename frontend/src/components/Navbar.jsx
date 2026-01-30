@@ -24,9 +24,9 @@ const Navbar = () => {
       top: '1rem',
       zIndex: 1000
     }}>
-      <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 800, fontSize: '1.25rem', color: 'var(--primary)' }}>
-        <Calendar size={28} />
-        <span>QueueSmart</span>
+      <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontWeight: 800, fontSize: '1.5rem', color: 'var(--primary)' }}>
+        <img src="/assets/indian-flag-custom.png" alt="India Flag" style={{ height: '40px', objectFit: 'contain', borderRadius: '4px' }} />
+        <span>eSeva India</span>
       </Link>
 
       <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>

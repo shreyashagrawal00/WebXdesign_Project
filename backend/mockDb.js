@@ -61,6 +61,7 @@ class MockDB {
       const user = this.users.find(u => u._id === a.userId);
       const slot = this.slots.find(s => s._id === a.slotId);
       const service = slot ? this.services.find(ser => ser._id === slot.serviceId) : null;
+      if (!slot) return { ...a, userId: user, slotId: null };
       return { ...a, userId: user, slotId: { ...slot, serviceId: service } };
     });
   }
@@ -71,6 +72,48 @@ class MockDB {
       return this.appointments[index];
     }
     return null;
+  }
+
+  // Update logic for changing slot timings globally for a service
+  // In a real app, this would be more complex (handling existing bookings etc.)
+  async updateServiceSlotTimes(serviceId, startTime, endTime) {
+    this.slots.forEach(slot => {
+      if (slot.serviceId === serviceId) {
+        slot.startTime = startTime;
+        slot.endTime = endTime;
+      }
+    });
+    return true;
+  }
+
+  async addSlot(serviceId, startTime, endTime, maxCapacity = 10) {
+    const newSlot = {
+      _id: Math.random().toString(36).substr(2, 9),
+      serviceId,
+      date: new Date().toISOString().split('T')[0], // Default to today for demo
+      startTime,
+      endTime,
+      maxCapacity,
+      bookedCount: 0,
+      currentToken: 1
+    };
+    this.slots.push(newSlot);
+    return newSlot;
+  }
+
+  async deleteSlot(slotId) {
+    const initialLength = this.slots.length;
+    this.slots = this.slots.filter(s => s._id !== slotId);
+    return this.slots.length < initialLength;
+  }
+
+  async getAllSlots() {
+    // populate service details if needed, for now just return slots
+    // In a real DB we would use .populate()
+    return this.slots.map(slot => {
+      const service = this.services.find(s => s._id === slot.serviceId);
+      return { ...slot, serviceId: service }; // Mock populate
+    });
   }
 }
 
