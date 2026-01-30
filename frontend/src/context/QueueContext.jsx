@@ -5,8 +5,11 @@ import { io } from 'socket.io-client';
 const QueueContext = createContext();
 export const useQueue = () => useContext(QueueContext);
 
-const API_URL = 'http://localhost:5001/api';
-const socket = io('http://localhost:5001');
+// Use relative path when served by backend, or fallback to localhost:5001 for dev
+const isProduction = process.env.NODE_ENV === 'production' || window.location.port === '5001';
+// In our case, since we serve from backend, relative works best.
+const API_URL = '/api';
+const socket = io(); // Connects to the same origin
 
 export const QueueProvider = ({ children }) => {
   const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')) || null);

@@ -146,5 +146,14 @@ server.listen(PORT, async () => {
   }
 });
 
+// Serve Frontend (make sure this is after API routes)
+const path = require('path');
+app.use(express.static(path.join(__dirname, '../frontend/dist')));
+
+// Catch-all route for React client-side routing
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/dist', 'index.html'));
+});
+
 // Export io to use in other routes
 module.exports = { app, server, io };
