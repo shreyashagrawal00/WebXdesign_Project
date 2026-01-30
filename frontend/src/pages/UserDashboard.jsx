@@ -139,14 +139,16 @@ const UserDashboard = () => {
                         onClick={async () => {
                           if (window.confirm('Are you sure you want to cancel this appointment?')) {
                             try {
-                              // We need to refresh data after cancellation, so using a force reload or re-fetch would be ideal.
-                              // For now, assuming axios is imported or available via context.
-                              await axios.post(`http://localhost:5001/api/appointments/cancel/${app._id}`, {}, {
+                              const response = await axios.post(`http://localhost:5001/api/appointments/cancel/${app._id}`, {}, {
                                 headers: { 'x-auth-token': localStorage.getItem('token') }
                               });
+                              console.log('Cancel response:', response.data);
+                              alert('Appointment cancelled successfully!');
                               window.location.reload(); // Simple reload to refresh state
                             } catch (err) {
-                              alert('Failed to cancel appointment');
+                              console.error('Cancel error:', err);
+                              const errorMsg = err.response?.data?.message || err.response?.data?.error || 'Failed to cancel appointment';
+                              alert(`Error: ${errorMsg}`);
                             }
                           }
                         }}

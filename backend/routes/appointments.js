@@ -54,18 +54,28 @@ router.get('/user', auth, async (req, res) => {
 router.post('/cancel/:id', auth, async (req, res) => {
   try {
     const { id } = req.params;
+    console.log(`[CANCEL] Attempting to cancel appointment ${id} for user ${req.user.id}`);
+
     // In a real DB we would findOne({ _id: id, userId: req.user.id }) to ensure ownership
     // For mockDB, we fetch all and check
     const appointments = await db.getUserAppointments(req.user.id);
+    console.log(`[CANCEL] Found ${appointments.length} appointments for user`);
+
     const appointment = appointments.find(a => a._id === id);
 
-    if (!appointment) return res.status(404).json({ message: 'Appointment not found' });
+    if (!appointment) {
+      console.log(`[CANCEL] Appointment ${id} not found for user ${req.user.id}`);
+      return res.status(404).json({ message: 'Appointment not found' });
+    }
 
-    await db.updateAppointment(id, { status: 'cancelled' });
+    console.log(`[CANCEL] Updating appointment ${id} to cancelled status`);
+    const updated = await db.updateAppointment(id, { status: 'cancelled' });
+    console.log(`[CANCEL] Update result:`, updated);
 
     // Optional: Decrement slot count if needed, but for now we just mark as cancelled
-    res.json({ message: 'Appointment cancelled' });
+    res.json({ message: 'Appointment cancelled', appointment: updated });
   } catch (err) {
+    console.error(`[CANCEL ERROR]`, err);
     res.status(500).json({ error: err.message });
   }
 });
