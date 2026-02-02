@@ -5,7 +5,8 @@ import { CheckCircle, Clock, MapPin, Calendar as CalendarIcon } from 'lucide-rea
 import axios from 'axios';
 
 const Booking = () => {
-  const { departments, bookAppointment, token } = useQueue();
+  const { departments, bookAppointment, token, api } = useQueue();
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -37,8 +38,9 @@ const Booking = () => {
   const fetchSlots = async (serviceId) => {
     setLoading(true);
     try {
-      const res = await axios.get(`http://localhost:5001/api/services/${serviceId}/slots`);
+      const res = await api.get(`/services/${serviceId}/slots`);
       setAvailableSlots(res.data);
+
     } catch (err) {
       console.error('Error fetching slots:', err);
     } finally {
@@ -277,8 +279,9 @@ const Booking = () => {
                   }
                   setLoading(true);
                   try {
-                    const res = await axios.post('http://localhost:5001/api/auth/send-otp', { contact: verificationData.contact });
+                    const res = await api.post('/auth/send-otp', { contact: verificationData.contact });
                     const otp = res.data.debugOtp;
+
                     alert(`OTP sent to ${verificationData.contact}.\n\nDEV MODE OTP: ${otp}\n\n(Since we don't have a real SMS gateway, use this code)`);
                   } catch (err) {
                     alert('Failed to send OTP: ' + (err.response?.data?.message || err.message));
@@ -321,8 +324,9 @@ const Booking = () => {
                   }
                   setLoading(true);
                   try {
-                    await axios.post('http://localhost:5001/api/auth/verify-otp', {
+                    await api.post('/auth/verify-otp', {
                       contact: verificationData.contact,
+
                       otp: verificationData.otp
                     });
 

@@ -4,7 +4,8 @@ import { Users, UserPlus, Play, SkipForward, CheckCircle, Ban, TrendingUp, Calen
 import axios from 'axios';
 
 const AdminDashboard = () => {
-  const { servingToken, nextPatient, token, user } = useQueue();
+  const { servingToken, nextPatient, token, user, api } = useQueue();
+
   const [allAppointments, setAllAppointments] = useState([]);
   const [services, setServices] = useState([]);
   const [slots, setSlots] = useState([]);
@@ -21,17 +22,17 @@ const AdminDashboard = () => {
 
   const fetchSlots = async () => {
     try {
-      const res = await axios.get('http://localhost:5001/api/admin/slots', {
-        headers: { 'x-auth-token': token }
-      });
+      const res = await api.get('/admin/slots');
       setSlots(res.data);
+
     } catch (err) { console.error(err); }
   };
 
   const fetchServices = async () => {
     try {
-      const res = await axios.get('http://localhost:5001/api/services');
+      const res = await api.get('/services');
       setServices(res.data);
+
     } catch (err) {
       console.error('Error fetching services:', err);
     }
@@ -40,10 +41,9 @@ const AdminDashboard = () => {
   const fetchAdminData = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('http://localhost:5001/api/admin/appointments/all', {
-        headers: { 'x-auth-token': token }
-      });
+      const res = await api.get('/admin/appointments/all');
       setAllAppointments(res.data);
+
     } catch (err) {
       console.error('Error fetching admin data:', err);
     } finally {
@@ -123,8 +123,9 @@ const AdminDashboard = () => {
                           onClick={async () => {
                             if (!window.confirm('Delete this slot?')) return;
                             try {
-                              await axios.post(`http://localhost:5001/api/admin/slots/delete/${slot._id}`, {}, { headers: { 'x-auth-token': token } });
+                              await api.post(`/admin/slots/delete/${slot._id}`);
                               fetchSlots(); // Refresh list
+
                             } catch (err) { alert('Failed to delete'); }
                           }}
                           style={{ background: 'rgba(239, 68, 68, 0.2)', border: '1px solid rgba(239, 68, 68, 0.5)', color: '#fca5a5', cursor: 'pointer', fontSize: '0.75rem', padding: '0.25rem 0.5rem', borderRadius: '4px' }}
@@ -160,11 +161,12 @@ const AdminDashboard = () => {
                           if (!start || !end) return alert('Please enter both times');
 
                           try {
-                            await axios.post('http://localhost:5001/api/admin/slots/add', {
+                            await api.post('/admin/slots/add', {
                               serviceId: service._id,
                               startTime: start,
                               endTime: end
-                            }, { headers: { 'x-auth-token': token } });
+                            });
+
 
                             // Clear inputs
                             document.getElementById(`start-${service._id}`).value = '';
@@ -230,10 +232,9 @@ const AdminDashboard = () => {
                               onClick={async () => {
                                 if (window.confirm(`Cancel appointment for ${app.userId?.name}?`)) {
                                   try {
-                                    await axios.post(`http://localhost:5001/api/admin/appointments/cancel/${app._id}`, {}, {
-                                      headers: { 'x-auth-token': token }
-                                    });
+                                    await api.post(`/admin/appointments/cancel/${app._id}`);
                                     fetchAdminData(); // Refresh list
+
                                   } catch (err) { alert('Failed to cancel'); }
                                 }
                               }}
@@ -295,11 +296,12 @@ const AdminDashboard = () => {
                 if (!newEnd) return;
 
                 try {
-                  await axios.post('http://localhost:5001/api/admin/slots/update', {
+                  await api.post('/admin/slots/update', {
                     serviceId,
                     startTime: newStart,
                     endTime: newEnd
-                  }, { headers: { 'x-auth-token': token } });
+                  });
+
 
                   alert("Success! Timings updated. Refreshing...");
                   fetchAdminData();
@@ -353,8 +355,9 @@ const AdminDashboard = () => {
                         onClick={async () => {
                           if (window.confirm('Are you sure you want to cancel this appointment?')) {
                             try {
-                              await axios.post(`http://localhost:5001/api/admin/appointment/${app._id}/cancel`, {}, { headers: { 'x-auth-token': token } });
+                              await api.post(`/admin/appointment/${app._id}/cancel`);
                               fetchAdminData();
+
                             } catch (err) { alert('Failed to cancel'); }
                           }
                         }}

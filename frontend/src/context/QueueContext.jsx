@@ -23,6 +23,7 @@ export const QueueProvider = ({ children }) => {
     headers: { 'x-auth-token': token }
   });
 
+
   useEffect(() => {
     fetchInitialData();
 
@@ -95,8 +96,11 @@ export const QueueProvider = ({ children }) => {
       departments,
       bookAppointment,
       nextPatient,
-      fetchInitialData
+      fetchInitialData,
+      api,
+      API_URL
     }}>
+
       {children}
     </QueueContext.Provider>
   );

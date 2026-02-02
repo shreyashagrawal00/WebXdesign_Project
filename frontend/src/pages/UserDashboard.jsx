@@ -4,7 +4,8 @@ import axios from 'axios';
 import { Clock, Users, Calendar, AlertCircle, RefreshCw } from 'lucide-react';
 
 const UserDashboard = () => {
-  const { appointments, servingToken, user } = useQueue();
+  const { appointments, servingToken, user, api } = useQueue();
+
 
   if (!user) return <div className="container" style={{ padding: '4rem', textAlign: 'center' }}>Please log in to view your dashboard.</div>;
 
@@ -139,10 +140,9 @@ const UserDashboard = () => {
                         onClick={async () => {
                           if (window.confirm('Are you sure you want to cancel this appointment?')) {
                             try {
-                              const response = await axios.post(`http://localhost:5001/api/appointments/cancel/${app._id}`, {}, {
-                                headers: { 'x-auth-token': localStorage.getItem('token') }
-                              });
+                              const response = await api.post(`/appointments/cancel/${app._id}`);
                               console.log('Cancel response:', response.data);
+
                               alert('Appointment cancelled successfully!');
                               window.location.reload(); // Simple reload to refresh state
                             } catch (err) {
