@@ -1,0 +1,3 @@
+## 2025-05-14 - [Explicit Label Association & Loading States]
+**Learning:** Even when inputs are nested inside labels, explicitly using `htmlFor` and `id` is more reliable for accessibility and ensures consistent behavior across different screen readers and browser engines. Additionally, adding simple CSS animations like `animate-spin` in a global CSS file is a lightweight way to provide async feedback without introducing new UI dependencies.
+**Action:** Always verify label-input linkage with automated tests (like clicking the label) and prefer native CSS for simple animations to keep the bundle size small.
