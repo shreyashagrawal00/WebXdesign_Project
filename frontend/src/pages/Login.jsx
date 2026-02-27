@@ -1,134 +1,115 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Mail, Lock, LogIn, ArrowRight, Phone, User as UserIcon } from 'lucide-react';
 import { useQueue } from '../context/QueueContext';
+import { LogIn, UserPlus } from 'lucide-react';
 
 const Login = () => {
-  const { login, register } = useQueue();
-  const [isRegister, setIsRegister] = useState(false);
+  const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    phone: '',
     password: '',
-    role: 'user'
   });
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { login, register } = useQueue();
 
   const handleAuth = async (e) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
     try {
-      if (isRegister) {
-        await register(formData);
-      } else {
+      if (isLogin) {
         await login(formData.email, formData.password);
+      } else {
+        await register(formData.name, formData.email, formData.password);
       }
-      navigate('/');
+      navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Authentication failed');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
   return (
-    <div className="container animate-fade" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
-      <div className="glass-card" style={{ width: '100%', maxWidth: '400px', padding: '2.5rem' }}>
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <h2 style={{ fontSize: '1.75rem', marginBottom: '0.5rem' }}>{isRegister ? 'Create Account' : 'Welcome Back'}</h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>
-            {isRegister ? 'Join QueueSmart today' : 'Log in to manage your appointments'}
-          </p>
-          {error && <p style={{ color: 'var(--danger)', marginTop: '0.5rem', fontSize: '0.875rem' }}>{error}</p>}
-        </div>
+    <div className="container" style={{ paddingTop: '8rem' }}>
+      <div className="glass-card animate-fade" style={{ maxWidth: '400px', margin: '0 auto' }}>
+        <h2 className="section-title" style={{ textAlign: 'center', paddingLeft: 0 }}>
+          {isLogin ? 'Welcome Back' : 'Join the Queue'}
+        </h2>
 
-        <form onSubmit={handleAuth} style={{ display: 'grid', gap: '1.25rem' }}>
-          {isRegister && (
-            <>
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>Full Name</label>
-                <div style={{ position: 'relative' }}>
-                  <UserIcon size={18} style={iconStyle} />
-                  <input name="name" type="text" placeholder="John Doe" required style={{ ...inputStyle, paddingLeft: '2.5rem' }} onChange={handleChange} />
-                </div>
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>Phone Number</label>
-                <div style={{ position: 'relative' }}>
-                  <Phone size={18} style={iconStyle} />
-                  <input name="phone" type="text" placeholder="+1 234 567 890" required style={{ ...inputStyle, paddingLeft: '2.5rem' }} onChange={handleChange} />
-                </div>
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>Account Type</label>
-                <select name="role" style={inputStyle} onChange={handleChange} value={formData.role}>
-                  <option value="user">User</option>
-                  <option value="admin">Admin</option>
-                </select>
-              </div>
-            </>
+        <form onSubmit={handleAuth} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          {!isLogin && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <label htmlFor="name" style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-muted)' }}>Name</label>
+              <input
+                id="name"
+                type="text"
+                placeholder="Enter your name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                required
+                style={{ padding: '0.75rem', borderRadius: '0.5rem', border: '1px solid var(--surface-border)', background: 'white' }}
+              />
+            </div>
           )}
 
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>Email Address</label>
-            <div style={{ position: 'relative' }}>
-              <Mail size={18} style={iconStyle} />
-              <input name="email" type="email" placeholder="name@example.com" required style={{ ...inputStyle, paddingLeft: '2.5rem' }} onChange={handleChange} />
-            </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <label htmlFor="email" style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-muted)' }}>Email</label>
+            <input
+              id="email"
+              type="email"
+              placeholder="Enter your email"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              required
+              style={{ padding: '0.75rem', borderRadius: '0.5rem', border: '1px solid var(--surface-border)', background: 'white' }}
+            />
           </div>
 
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>Password</label>
-            <div style={{ position: 'relative' }}>
-              <Lock size={18} style={iconStyle} />
-              <input name="password" type="password" placeholder="••••••••" required style={{ ...inputStyle, paddingLeft: '2.5rem' }} onChange={handleChange} />
-            </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <label htmlFor="password" style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-muted)' }}>Password</label>
+            <input
+              id="password"
+              type="password"
+              placeholder="Enter your password"
+              value={formData.password}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              required
+              style={{ padding: '0.75rem', borderRadius: '0.5rem', border: '1px solid var(--surface-border)', background: 'white' }}
+            />
           </div>
 
-          <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: '1rem' }}>
-            {isRegister ? 'Sign Up' : 'Sign In'}
-            <ArrowRight size={18} />
+          {error && <div style={{ color: 'var(--danger)', fontSize: '0.875rem', textAlign: 'center' }}>{error}</div>}
+
+          <button
+            type="submit"
+            className="btn-primary"
+            disabled={loading}
+            style={{ width: '100%', justifyContent: 'center', opacity: loading ? 0.7 : 1 }}
+          >
+            {loading ? (
+              isLogin ? 'Signing In...' : 'Creating Account...'
+            ) : (
+              <>
+                {isLogin ? <LogIn size={20} /> : <UserPlus size={20} />}
+                {isLogin ? 'Sign In' : 'Create Account'}
+              </>
+            )}
           </button>
         </form>
 
-        <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.875rem' }}>
-          <p style={{ color: 'var(--text-muted)' }}>
-            {isRegister ? 'Already have an account?' : "Don't have an account?"} {' '}
-            <button
-              onClick={() => setIsRegister(!isRegister)}
-              style={{ background: 'none', color: 'var(--primary)', fontWeight: 600, padding: 0 }}
-            >
-              {isRegister ? 'Sign In' : 'Register Now'}
-            </button>
-          </p>
-        </div>
+        <button
+          onClick={() => setIsLogin(!isLogin)}
+          style={{ width: '100%', marginTop: '1.5rem', background: 'none', color: 'var(--primary)', fontSize: '0.875rem', fontWeight: 600 }}
+        >
+          {isLogin ? "Don't have an account? Sign Up" : 'Already have an account? Sign In'}
+        </button>
       </div>
     </div>
   );
-};
-
-const inputStyle = {
-  width: '100%',
-  padding: '0.75rem 1rem',
-  borderRadius: '0.5rem',
-  background: 'var(--glass-bg)',
-  border: '1px solid var(--surface-border)',
-  color: 'var(--text)',
-  fontSize: '1rem',
-  outline: 'none',
-  transition: 'border-color 0.2s'
-};
-
-const iconStyle = {
-  position: 'absolute',
-  left: '0.75rem',
-  top: '50%',
-  transform: 'translateY(-50%)',
-  color: 'var(--text-muted)'
 };
 
 export default Login;
