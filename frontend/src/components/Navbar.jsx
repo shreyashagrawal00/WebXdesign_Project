@@ -53,7 +53,13 @@ const Navbar = () => {
         </div>
 
         {/* Mobile Menu Button */}
-        <button className="mobile-menu-btn" onClick={toggleMenu} style={{ background: 'none', color: 'var(--text)' }}>
+        <button
+          className="mobile-menu-btn"
+          onClick={toggleMenu}
+          style={{ background: 'none', color: 'var(--text)' }}
+          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+          aria-expanded={isMenuOpen}
+        >
           {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
@@ -100,6 +106,15 @@ const Navbar = () => {
         }
         .mobile-menu-btn {
           display: none;
+          padding: 0.5rem;
+          border-radius: 0.5rem;
+          transition: background-color 0.2s;
+        }
+
+        .mobile-menu-btn:focus-visible {
+          outline: 2px solid var(--primary);
+          outline-offset: 2px;
+          background-color: rgba(0, 0, 0, 0.05);
         }
         
         @keyframes slideDown {
