@@ -53,15 +53,26 @@ const Navbar = () => {
         </div>
 
         {/* Mobile Menu Button */}
-        <button className="mobile-menu-btn" onClick={toggleMenu} style={{ background: 'none', color: 'var(--text)' }}>
+        <button
+          className="mobile-menu-btn"
+          onClick={toggleMenu}
+          style={{ background: 'none', color: 'var(--text)' }}
+          aria-label="Toggle navigation menu"
+          aria-expanded={isMenuOpen}
+          aria-controls="mobile-navigation-menu"
+        >
           {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
       {/* Mobile Menu Dropdown */}
       {isMenuOpen && (
-        <div className="mobile-menu" style={{
-          marginTop: '1rem',
+        <div
+          id="mobile-navigation-menu"
+          role="navigation"
+          className="mobile-menu"
+          style={{
+            marginTop: '1rem',
           paddingTop: '1rem',
           borderTop: '1px solid var(--surface-border)',
           display: 'flex',
