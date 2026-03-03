@@ -1,0 +1,3 @@
+## 2025-05-21 - Accessible Form Associations
+**Learning:** In React applications using conditional rendering (like toggling between Login and Register), implicit label nesting can sometimes be less reliable for screen readers than explicit `htmlFor` and `id` associations, especially when multiple forms share similar fields. Explicit associations also improve the "tap target" experience on mobile by ensuring the label reliably focuses the input.
+**Action:** Always use explicit `htmlFor` on labels and matching `id` on inputs. Include `aria-required="true"` for mandatory fields to provide additional context to assistive technologies.

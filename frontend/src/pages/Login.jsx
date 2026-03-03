@@ -50,22 +50,22 @@ const Login = () => {
           {isRegister && (
             <>
               <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>Full Name</label>
+                <label htmlFor="name" style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>Full Name</label>
                 <div style={{ position: 'relative' }}>
                   <UserIcon size={18} style={iconStyle} />
-                  <input name="name" type="text" placeholder="John Doe" required style={{ ...inputStyle, paddingLeft: '2.5rem' }} onChange={handleChange} />
+                  <input id="name" name="name" type="text" placeholder="John Doe" required aria-required="true" style={{ ...inputStyle, paddingLeft: '2.5rem' }} onChange={handleChange} />
                 </div>
               </div>
               <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>Phone Number</label>
+                <label htmlFor="phone" style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>Phone Number</label>
                 <div style={{ position: 'relative' }}>
                   <Phone size={18} style={iconStyle} />
-                  <input name="phone" type="text" placeholder="+1 234 567 890" required style={{ ...inputStyle, paddingLeft: '2.5rem' }} onChange={handleChange} />
+                  <input id="phone" name="phone" type="text" placeholder="+1 234 567 890" required aria-required="true" style={{ ...inputStyle, paddingLeft: '2.5rem' }} onChange={handleChange} />
                 </div>
               </div>
               <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>Account Type</label>
-                <select name="role" style={inputStyle} onChange={handleChange} value={formData.role}>
+                <label htmlFor="role" style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>Account Type</label>
+                <select id="role" name="role" style={inputStyle} onChange={handleChange} value={formData.role}>
                   <option value="user">User</option>
                   <option value="admin">Admin</option>
                 </select>
@@ -74,18 +74,18 @@ const Login = () => {
           )}
 
           <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>Email Address</label>
+            <label htmlFor="email" style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>Email Address</label>
             <div style={{ position: 'relative' }}>
               <Mail size={18} style={iconStyle} />
-              <input name="email" type="email" placeholder="name@example.com" required style={{ ...inputStyle, paddingLeft: '2.5rem' }} onChange={handleChange} />
+              <input id="email" name="email" type="email" placeholder="name@example.com" required aria-required="true" style={{ ...inputStyle, paddingLeft: '2.5rem' }} onChange={handleChange} />
             </div>
           </div>
 
           <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>Password</label>
+            <label htmlFor="password" style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>Password</label>
             <div style={{ position: 'relative' }}>
               <Lock size={18} style={iconStyle} />
-              <input name="password" type="password" placeholder="••••••••" required style={{ ...inputStyle, paddingLeft: '2.5rem' }} onChange={handleChange} />
+              <input id="password" name="password" type="password" placeholder="••••••••" required aria-required="true" style={{ ...inputStyle, paddingLeft: '2.5rem' }} onChange={handleChange} />
             </div>
           </div>
 
