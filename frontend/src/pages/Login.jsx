@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Mail, Lock, LogIn, ArrowRight, Phone, User as UserIcon } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Phone, User as UserIcon, Loader2 } from 'lucide-react';
 import { useQueue } from '../context/QueueContext';
 
 const Login = () => {
   const { login, register } = useQueue();
   const [isRegister, setIsRegister] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -19,6 +20,7 @@ const Login = () => {
   const handleAuth = async (e) => {
     e.preventDefault();
     setError('');
+    setIsLoading(true);
     try {
       if (isRegister) {
         await register(formData);
@@ -28,6 +30,8 @@ const Login = () => {
       navigate('/');
     } catch (err) {
       setError(err.response?.data?.message || 'Authentication failed');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -53,19 +57,19 @@ const Login = () => {
                 <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>Full Name</label>
                 <div style={{ position: 'relative' }}>
                   <UserIcon size={18} style={iconStyle} />
-                  <input name="name" type="text" placeholder="John Doe" required style={{ ...inputStyle, paddingLeft: '2.5rem' }} onChange={handleChange} />
+                  <input name="name" type="text" placeholder="John Doe" required disabled={isLoading} style={{ ...inputStyle, paddingLeft: '2.5rem' }} onChange={handleChange} />
                 </div>
               </div>
               <div>
                 <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>Phone Number</label>
                 <div style={{ position: 'relative' }}>
                   <Phone size={18} style={iconStyle} />
-                  <input name="phone" type="text" placeholder="+1 234 567 890" required style={{ ...inputStyle, paddingLeft: '2.5rem' }} onChange={handleChange} />
+                  <input name="phone" type="text" placeholder="+1 234 567 890" required disabled={isLoading} style={{ ...inputStyle, paddingLeft: '2.5rem' }} onChange={handleChange} />
                 </div>
               </div>
               <div>
                 <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>Account Type</label>
-                <select name="role" style={inputStyle} onChange={handleChange} value={formData.role}>
+                <select name="role" style={inputStyle} onChange={handleChange} value={formData.role} disabled={isLoading}>
                   <option value="user">User</option>
                   <option value="admin">Admin</option>
                 </select>
@@ -77,7 +81,7 @@ const Login = () => {
             <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>Email Address</label>
             <div style={{ position: 'relative' }}>
               <Mail size={18} style={iconStyle} />
-              <input name="email" type="email" placeholder="name@example.com" required style={{ ...inputStyle, paddingLeft: '2.5rem' }} onChange={handleChange} />
+              <input name="email" type="email" placeholder="name@example.com" required disabled={isLoading} style={{ ...inputStyle, paddingLeft: '2.5rem' }} onChange={handleChange} />
             </div>
           </div>
 
@@ -85,13 +89,33 @@ const Login = () => {
             <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>Password</label>
             <div style={{ position: 'relative' }}>
               <Lock size={18} style={iconStyle} />
-              <input name="password" type="password" placeholder="••••••••" required style={{ ...inputStyle, paddingLeft: '2.5rem' }} onChange={handleChange} />
+              <input name="password" type="password" placeholder="••••••••" required disabled={isLoading} style={{ ...inputStyle, paddingLeft: '2.5rem' }} onChange={handleChange} />
             </div>
           </div>
 
-          <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: '1rem' }}>
-            {isRegister ? 'Sign Up' : 'Sign In'}
-            <ArrowRight size={18} />
+          <button
+            type="submit"
+            className="btn-primary"
+            disabled={isLoading}
+            style={{
+              width: '100%',
+              justifyContent: 'center',
+              marginTop: '1rem',
+              opacity: isLoading ? 0.7 : 1,
+              cursor: isLoading ? 'not-allowed' : 'pointer'
+            }}
+          >
+            {isLoading ? (
+              <>
+                <Loader2 size={18} style={{ animation: 'logo-spin infinite 1s linear' }} />
+                <span>Processing...</span>
+              </>
+            ) : (
+              <>
+                {isRegister ? 'Sign Up' : 'Sign In'}
+                <ArrowRight size={18} />
+              </>
+            )}
           </button>
         </form>
 
