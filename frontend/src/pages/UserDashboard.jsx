@@ -1,13 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQueue } from '../context/QueueContext';
-import axios from 'axios';
 import { Clock, Users, Calendar, AlertCircle, RefreshCw } from 'lucide-react';
 
 const UserDashboard = () => {
-  const { appointments, servingToken, user, api } = useQueue();
-
+  const { appointments, servingToken, user, api, fetchInitialData } = useQueue();
+  const [isSyncing, setIsSyncing] = useState(false);
 
   if (!user) return <div className="container" style={{ padding: '4rem', textAlign: 'center' }}>Please log in to view your dashboard.</div>;
+
+  const handleSync = async () => {
+    setIsSyncing(true);
+    try {
+      await fetchInitialData();
+    } catch (err) {
+      console.error('Sync failed:', err);
+    } finally {
+      // Small delay for better visual feedback
+      setTimeout(() => setIsSyncing(false), 600);
+    }
+  };
 
   const userAppointments = appointments.filter(a => a.status !== 'cancelled').reverse();
   const activeAppt = userAppointments.find(a => a.status === 'waiting');
@@ -18,9 +29,27 @@ const UserDashboard = () => {
         <h1 style={{ fontSize: '2rem' }}>My Appointments</h1>
         <div style={{ display: 'flex', gap: '1rem' }}>
           <p style={{ color: 'var(--text-muted)' }}>Welcome, {user.name}</p>
-          <button className="glass-card" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem' }}>
-            <RefreshCw size={18} />
-            Sync Status
+          <button
+            onClick={handleSync}
+            disabled={isSyncing}
+            aria-label="Sync appointment status"
+            className="glass-card"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              padding: '0.5rem 1rem',
+              opacity: isSyncing ? 0.7 : 1,
+              cursor: isSyncing ? 'not-allowed' : 'pointer'
+            }}
+          >
+            <RefreshCw
+              size={18}
+              style={{
+                animation: isSyncing ? 'logo-spin 1s linear infinite' : 'none'
+              }}
+            />
+            {isSyncing ? 'Syncing...' : 'Sync Status'}
           </button>
         </div>
       </div>
@@ -136,6 +165,7 @@ const UserDashboard = () => {
                     {app.status === 'waiting' && (
                       <button
                         className="btn-primary"
+                        aria-label="Cancel appointment"
                         style={{ padding: '0.5rem 1rem', background: 'var(--danger)', fontSize: '0.75rem' }}
                         onClick={async () => {
                           if (window.confirm('Are you sure you want to cancel this appointment?')) {
@@ -144,7 +174,7 @@ const UserDashboard = () => {
                               console.log('Cancel response:', response.data);
 
                               alert('Appointment cancelled successfully!');
-                              window.location.reload(); // Simple reload to refresh state
+                              await fetchInitialData();
                             } catch (err) {
                               console.error('Cancel error:', err);
                               const errorMsg = err.response?.data?.message || err.response?.data?.error || 'Failed to cancel appointment';
