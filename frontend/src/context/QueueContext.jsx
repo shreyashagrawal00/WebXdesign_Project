@@ -23,19 +23,6 @@ export const QueueProvider = ({ children }) => {
     headers: { 'x-auth-token': token }
   });
 
-
-  useEffect(() => {
-    fetchInitialData();
-
-    // Listen for queue updates
-    socket.on('queueUpdate', ({ slotId, currentToken }) => {
-      setServingToken(currentToken);
-      // You could also refresh appointments here if needed
-    });
-
-    return () => socket.off('queueUpdate');
-  }, [token]);
-
   const fetchInitialData = async () => {
     try {
       const resDepts = await api.get('/services');
@@ -49,6 +36,18 @@ export const QueueProvider = ({ children }) => {
       console.error('Error fetching data:', err);
     }
   };
+
+  useEffect(() => {
+    fetchInitialData();
+
+    // Listen for queue updates
+    socket.on('queueUpdate', ({ currentToken }) => {
+      setServingToken(currentToken);
+      // You could also refresh appointments here if needed
+    });
+
+    return () => socket.off('queueUpdate');
+  }, [token]);
 
   const login = async (email, password) => {
     const res = await axios.post(`${API_URL}/auth/login`, { email, password });
