@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQueue } from '../context/QueueContext';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { CheckCircle, Clock, MapPin, Calendar as CalendarIcon } from 'lucide-react';
-import axios from 'axios';
+import { CheckCircle, Clock, MapPin, Calendar as CalendarIcon, Loader2 } from 'lucide-react';
 
 const Booking = () => {
   const { departments, bookAppointment, token, api } = useQueue();
@@ -249,10 +248,11 @@ const Booking = () => {
 
             <div className="glass-card" style={{ maxWidth: '500px', margin: '0 auto', padding: '2rem' }}>
               <div style={{ marginBottom: '1.5rem' }}>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>
+                <label htmlFor="contact" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>
                   Mobile Number / Email
                 </label>
                 <input
+                  id="contact"
                   type="text"
                   placeholder="Enter mobile number or email"
                   value={verificationData.contact}
@@ -290,14 +290,15 @@ const Booking = () => {
                   }
                 }}
               >
-                {loading ? 'Sending...' : 'Send OTP'}
+                {loading ? <Loader2 className="spinner" size={18} /> : 'Send OTP'}
               </button>
 
               <div style={{ marginBottom: '1.5rem' }}>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>
+                <label htmlFor="otp" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>
                   Enter OTP
                 </label>
                 <input
+                  id="otp"
                   type="text"
                   placeholder="Enter 6-digit OTP"
                   value={verificationData.otp}
@@ -340,7 +341,7 @@ const Booking = () => {
                   }
                 }}
               >
-                {loading ? 'Verifying...' : (
+                {loading ? <Loader2 className="spinner" size={18} /> : (
                   formData.action.includes('Download') || formData.action.includes('Get') ? 'Download Now' : 'Check Status'
                 )}
               </button>
