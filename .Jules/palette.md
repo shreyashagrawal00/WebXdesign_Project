@@ -1,0 +1,3 @@
+## 2025-05-15 - [Improving Feedback for Async Operations]
+**Learning:** In a Single Page Application (SPA), users expect immediate visual feedback for all primary actions. The "Queue Smart" app lacked loading indicators for authentication and OTP verification, which could lead to multiple form submissions and user confusion. Adding a `isLoading` state and a visual spinner within buttons provides this feedback while naturally preventing redundant clicks.
+**Action:** Always implement `isLoading` states for buttons that trigger network requests, and use `aria-live` to announce status updates or errors to screen reader users.

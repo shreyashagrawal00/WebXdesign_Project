@@ -1,6 +1,5 @@
 import React from 'react';
 import { useQueue } from '../context/QueueContext';
-import axios from 'axios';
 import { Clock, Users, Calendar, AlertCircle, RefreshCw } from 'lucide-react';
 
 const UserDashboard = () => {
