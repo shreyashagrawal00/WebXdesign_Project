@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQueue } from '../context/QueueContext';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { CheckCircle, Clock, MapPin, Calendar as CalendarIcon } from 'lucide-react';
+import { CheckCircle, Clock, MapPin, Calendar as CalendarIcon, Loader2 } from 'lucide-react';
 import axios from 'axios';
 
 const Booking = () => {
@@ -24,6 +24,7 @@ const Booking = () => {
   });
   const [availableSlots, setAvailableSlots] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [isBooking, setIsBooking] = useState(false);
   const [showInstantService, setShowInstantService] = useState(false);
   const [verificationData, setVerificationData] = useState({ contact: '', otp: '' });
 
@@ -53,6 +54,7 @@ const Booking = () => {
       navigate('/login');
       return;
     }
+    setIsBooking(true);
     try {
       await bookAppointment({
         slotId: formData.slotId,
@@ -61,6 +63,8 @@ const Booking = () => {
       navigate('/dashboard');
     } catch (err) {
       alert('Booking failed: ' + (err.response?.data?.message || err.message));
+    } finally {
+      setIsBooking(false);
     }
   };
 
@@ -422,10 +426,18 @@ const Booking = () => {
               <button className="glass-card" style={{ flex: 1, padding: '0.75rem' }} onClick={() => setStep(3)}>Back</button>
               <button
                 className="btn-primary"
-                style={{ flex: 2 }}
+                style={{ flex: 2, justifyContent: 'center' }}
                 onClick={handleBook}
+                disabled={isBooking}
               >
-                Confirm Appointment
+                {isBooking ? (
+                  <>
+                    <Loader2 size={18} className="logo-spin" />
+                    Booking...
+                  </>
+                ) : (
+                  'Confirm Appointment'
+                )}
               </button>
             </div>
           </div>
