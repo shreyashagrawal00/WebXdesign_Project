@@ -1,0 +1,3 @@
+## 2025-05-14 - Loading State Utilities and Form Accessibility
+**Learning:** In projects without utility-first CSS frameworks like Tailwind, providing a global `.animate-spin` class and `@keyframes spin` in `index.css` is a high-value micro-UX improvement that enables consistent loading indicators across the app. Additionally, using `aria-live="polite"` and `role="alert"` for dynamic error messages ensures screen readers catch transient errors during form submission.
+**Action:** Always check for existing animation utilities before implementing loading states; if missing, add them to a global stylesheet rather than using inline styles.
