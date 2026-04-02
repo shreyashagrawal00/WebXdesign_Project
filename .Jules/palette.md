@@ -1,0 +1,3 @@
+## 2025-05-22 - Mobile Navigation Accessibility and Async Feedback
+**Learning:** In Single Page Applications (SPAs) like this, mobile menu toggles and asynchronous form submissions often lack necessary accessibility attributes (`aria-expanded`, `aria-label`) and visual feedback. Users relying on screen readers or those with slower network connections can experience "dead" interactions where the UI doesn't clearly communicate state changes.
+**Action:** Always implement `aria-expanded` on menu toggles and `isLoading` states on buttons triggering async operations. Using standardized utility classes like `.animate-spin` for loading icons ensures consistent feedback without bloating the codebase with redundant CSS.
