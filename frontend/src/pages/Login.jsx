@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Mail, Lock, LogIn, ArrowRight, Phone, User as UserIcon } from 'lucide-react';
+import { Mail, Lock, LogIn, ArrowRight, Phone, User as UserIcon, Loader2 } from 'lucide-react';
 import { useQueue } from '../context/QueueContext';
 
 const Login = () => {
@@ -14,11 +14,13 @@ const Login = () => {
     role: 'user'
   });
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleAuth = async (e) => {
     e.preventDefault();
     setError('');
+    setIsLoading(true);
     try {
       if (isRegister) {
         await register(formData);
@@ -28,6 +30,8 @@ const Login = () => {
       navigate('/');
     } catch (err) {
       setError(err.response?.data?.message || 'Authentication failed');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -89,9 +93,27 @@ const Login = () => {
             </div>
           </div>
 
-          <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: '1rem' }}>
-            {isRegister ? 'Sign Up' : 'Sign In'}
-            <ArrowRight size={18} />
+          <button
+            type="submit"
+            className="btn-primary"
+            disabled={isLoading}
+            style={{
+              width: '100%',
+              justifyContent: 'center',
+              marginTop: '1rem'
+            }}
+          >
+            {isLoading ? (
+              <>
+                <Loader2 size={18} className="animate-spin" aria-hidden="true" />
+                <span>Processing...</span>
+              </>
+            ) : (
+              <>
+                {isRegister ? 'Sign Up' : 'Sign In'}
+                <ArrowRight size={18} />
+              </>
+            )}
           </button>
         </form>
 
