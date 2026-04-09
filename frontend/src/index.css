@@ -93,6 +93,13 @@ ul {
   box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
 }
 
+.btn-primary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
 .btn-secondary {
   background: var(--secondary);
   color: white;
@@ -138,6 +145,19 @@ h3 {
 
 .animate-fade {
   animation: fadeIn 0.4s ease forwards;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
 }
 
 /* Responsive Helpers */
