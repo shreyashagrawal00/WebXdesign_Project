@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Mail, Lock, LogIn, ArrowRight, Phone, User as UserIcon } from 'lucide-react';
+import { Mail, Lock, LogIn, ArrowRight, Phone, User as UserIcon, Loader2 } from 'lucide-react';
 import { useQueue } from '../context/QueueContext';
 
 const Login = () => {
   const { login, register } = useQueue();
   const [isRegister, setIsRegister] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -19,15 +20,13 @@ const Login = () => {
   const handleAuth = async (e) => {
     e.preventDefault();
     setError('');
+    setIsLoading(true);
     try {
-      if (isRegister) {
-        await register(formData);
-      } else {
-        await login(formData.email, formData.password);
-      }
+      isRegister ? await register(formData) : await login(formData.email, formData.password);
       navigate('/');
     } catch (err) {
       setError(err.response?.data?.message || 'Authentication failed');
+      setIsLoading(false);
     }
   };
 
@@ -43,7 +42,7 @@ const Login = () => {
           <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>
             {isRegister ? 'Join QueueSmart today' : 'Log in to manage your appointments'}
           </p>
-          {error && <p style={{ color: 'var(--danger)', marginTop: '0.5rem', fontSize: '0.875rem' }}>{error}</p>}
+          {error && <p role="alert" aria-live="polite" style={{ color: 'var(--danger)', marginTop: '0.5rem', fontSize: '0.875rem' }}>{error}</p>}
         </div>
 
         <form onSubmit={handleAuth} style={{ display: 'grid', gap: '1.25rem' }}>
@@ -89,9 +88,8 @@ const Login = () => {
             </div>
           </div>
 
-          <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: '1rem' }}>
-            {isRegister ? 'Sign Up' : 'Sign In'}
-            <ArrowRight size={18} />
+          <button type="submit" className="btn-primary" disabled={isLoading} style={{ width: '100%', justifyContent: 'center', marginTop: '1rem' }}>
+            {isLoading ? <Loader2 size={18} className="animate-spin" /> : <>{isRegister ? 'Sign Up' : 'Sign In'}<ArrowRight size={18} /></>}
           </button>
         </form>
 
