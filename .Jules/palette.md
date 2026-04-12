@@ -1,0 +1,3 @@
+## 2025-05-14 - Standardizing Async Form Feedback
+**Learning:** In React 19 apps with fast-resolving mock APIs, users may miss transient state changes. Implementing a unified feedback loop—disabling the submit button, showing a `Loader2` spinner, and using `role="alert"` for error messages—ensures that both sighted and screen-reader users receive immediate confirmation of their actions.
+**Action:** Always pair `isLoading` states with the `disabled` attribute on buttons to prevent race conditions, and use `role="alert"` for dynamic error text to ensure it is announced immediately by assistive technologies.
