@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQueue } from '../context/QueueContext';
 import axios from 'axios';
-import { Clock, Users, Calendar, AlertCircle, RefreshCw } from 'lucide-react';
+import { Clock, Users, Calendar, AlertCircle, RefreshCw, Loader2 } from 'lucide-react';
 
 const UserDashboard = () => {
-  const { appointments, servingToken, user, api } = useQueue();
+  const { appointments, servingToken, user, api, fetchInitialData } = useQueue();
+  const [cancellingId, setCancellingId] = useState(null);
 
 
   if (!user) return <div className="container" style={{ padding: '4rem', textAlign: 'center' }}>Please log in to view your dashboard.</div>;
@@ -137,23 +138,32 @@ const UserDashboard = () => {
                       <button
                         className="btn-primary"
                         style={{ padding: '0.5rem 1rem', background: 'var(--danger)', fontSize: '0.75rem' }}
+                        disabled={cancellingId === app._id}
                         onClick={async () => {
                           if (window.confirm('Are you sure you want to cancel this appointment?')) {
+                            setCancellingId(app._id);
                             try {
                               const response = await api.post(`/appointments/cancel/${app._id}`);
                               console.log('Cancel response:', response.data);
 
                               alert('Appointment cancelled successfully!');
-                              window.location.reload(); // Simple reload to refresh state
+                              await fetchInitialData();
                             } catch (err) {
                               console.error('Cancel error:', err);
                               const errorMsg = err.response?.data?.message || err.response?.data?.error || 'Failed to cancel appointment';
                               alert(`Error: ${errorMsg}`);
+                            } finally {
+                              setCancellingId(null);
                             }
                           }
                         }}
                       >
-                        Cancel
+                        {cancellingId === app._id ? (
+                          <>
+                            <Loader2 size={14} className="animate-spin" />
+                            Cancelling...
+                          </>
+                        ) : 'Cancel'}
                       </button>
                     )}
                   </div>
