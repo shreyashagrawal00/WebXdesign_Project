@@ -1,0 +1,3 @@
+## 2025-05-15 - [UX/A11y Enhancements for QueueSmart]
+**Learning:** Transitioning from `window.location.reload()` to non-blocking background refreshes significantly improves the perceived performance and "fluidity" of a Single Page Application. Users prefer seeing immediate localized feedback (like a "Syncing..." state) over a blank screen during a full reload. Additionally, standardizing `:disabled` states and loading spinners in global CSS ensures a consistent "locked" interaction pattern across the app without duplicating logic.
+**Action:** Always prefer updating local state and triggering a background fetch over full page reloads. Use global utility classes for common animations (like `.animate-spin`) and interactive states to maintain design consistency.
