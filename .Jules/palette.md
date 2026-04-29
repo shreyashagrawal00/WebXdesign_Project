@@ -1,0 +1,3 @@
+## 2026-04-29 - [Localized State Management for Async Feedback]
+**Learning:** Replacing global page reloads (`window.location.reload()`) with localized asynchronous state updates (`isSyncing`, `cancellingId`) and contextual refreshes (`fetchInitialData`) significantly improves SPA perceived performance and maintains user scroll position/context. Pair this with ARIA live regions (`role="status"`, `aria-live="polite"`) to ensure screen reader users are notified of the background updates.
+**Action:** Always look for `window.location.reload()` in the codebase and replace it with a more granular data-fetching pattern and appropriate loading/disabled visual states.
