@@ -1,0 +1,3 @@
+## 2025-05-15 - Improving Dashboard Responsiveness and Accessibility
+**Learning:** Replacing `window.location.reload()` with targeted asynchronous data refreshes (like `fetchInitialData`) prevents jarring UI flashes and maintains the Single Page Application (SPA) feel. Additionally, using `role="status"` and `aria-live="polite"` on dynamic dashboard elements ensures that background updates are communicated to assistive technologies without interrupting the user's flow.
+**Action:** Always prefer asynchronous state updates over full-page reloads for post-action feedback, and explicitly define ARIA live regions for components that display real-time or frequently updated data.

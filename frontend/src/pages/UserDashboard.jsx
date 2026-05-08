@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQueue } from '../context/QueueContext';
-import axios from 'axios';
-import { Clock, Users, Calendar, AlertCircle, RefreshCw } from 'lucide-react';
+import { Clock, Calendar, AlertCircle, RefreshCw, Loader2 } from 'lucide-react';
 
 const UserDashboard = () => {
-  const { appointments, servingToken, user, api } = useQueue();
-
+  const { appointments, servingToken, user, api, fetchInitialData } = useQueue();
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [cancellingId, setCancellingId] = useState(null);
 
   if (!user) return <div className="container" style={{ padding: '4rem', textAlign: 'center' }}>Please log in to view your dashboard.</div>;
 
@@ -18,9 +18,15 @@ const UserDashboard = () => {
         <h1 style={{ fontSize: '2rem' }}>My Appointments</h1>
         <div style={{ display: 'flex', gap: '1rem' }}>
           <p style={{ color: 'var(--text-muted)' }}>Welcome, {user.name}</p>
-          <button className="glass-card" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem' }}>
-            <RefreshCw size={18} />
-            Sync Status
+          <button
+            onClick={async () => { setIsSyncing(true); try { await fetchInitialData(); } finally { setIsSyncing(false); } }}
+            disabled={isSyncing}
+            className="glass-card"
+            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', cursor: isSyncing ? 'not-allowed' : 'pointer', opacity: isSyncing ? 0.7 : 1 }}
+            aria-label="Sync status"
+          >
+            {isSyncing ? <Loader2 size={18} className="animate-spin" /> : <RefreshCw size={18} />}
+            {isSyncing ? 'Syncing...' : 'Sync Status'}
           </button>
         </div>
       </div>
@@ -55,7 +61,7 @@ const UserDashboard = () => {
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginTop: '2rem', textAlign: 'center' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginTop: '2rem', textAlign: 'center' }} role="status" aria-live="polite">
               <div className="glass-card" style={{ background: 'var(--surface)' }}>
                 <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>Now Serving</p>
                 <h3 style={{ fontSize: '2rem', color: 'var(--primary)' }}>#{activeAppt.slotId?.currentToken || servingToken}</h3>
@@ -136,24 +142,20 @@ const UserDashboard = () => {
                     {app.status === 'waiting' && (
                       <button
                         className="btn-primary"
-                        style={{ padding: '0.5rem 1rem', background: 'var(--danger)', fontSize: '0.75rem' }}
+                        style={{ padding: '0.5rem 1rem', background: 'var(--danger)', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px' }}
+                        disabled={cancellingId === app._id}
                         onClick={async () => {
-                          if (window.confirm('Are you sure you want to cancel this appointment?')) {
-                            try {
-                              const response = await api.post(`/appointments/cancel/${app._id}`);
-                              console.log('Cancel response:', response.data);
-
-                              alert('Appointment cancelled successfully!');
-                              window.location.reload(); // Simple reload to refresh state
-                            } catch (err) {
-                              console.error('Cancel error:', err);
-                              const errorMsg = err.response?.data?.message || err.response?.data?.error || 'Failed to cancel appointment';
-                              alert(`Error: ${errorMsg}`);
-                            }
-                          }
+                          if (!window.confirm('Are you sure you want to cancel this appointment?')) return;
+                          setCancellingId(app._id);
+                          try {
+                            await api.post(`/appointments/cancel/${app._id}`);
+                            await fetchInitialData();
+                          } catch (err) { alert('Failed to cancel appointment'); }
+                          finally { setCancellingId(null); }
                         }}
                       >
-                        Cancel
+                        {cancellingId === app._id ? <Loader2 size={14} className="animate-spin" /> : null}
+                        {cancellingId === app._id ? 'Cancelling...' : 'Cancel'}
                       </button>
                     )}
                   </div>
