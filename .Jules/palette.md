@@ -1,0 +1,3 @@
+## 2025-05-14 - Improved Dashboard Feedback & Navbar Accessibility
+**Learning:** Replacing disruptive full-page reloads with targeted state-based fetching (e.g., `fetchInitialData()`) significantly improves perceived performance and keeps the user in their flow. Pair these async operations with localized loading states (spinners) and ARIA live regions to ensure all users, including those using screen readers, are informed of the background update.
+**Action:** Always prefer `fetch` over `window.location.reload()` in React SPAs. Implement localized `isLoading` states for specific buttons rather than a global page loader for micro-interactions.
