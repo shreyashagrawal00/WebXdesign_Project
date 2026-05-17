@@ -1,17 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Mail, Lock, LogIn, ArrowRight, Phone, User as UserIcon } from 'lucide-react';
+import { Mail, Lock, LogIn, ArrowRight, Phone, User as UserIcon, Loader2 } from 'lucide-react';
 import { useQueue } from '../context/QueueContext';
 
 const Login = () => {
   const { login, register } = useQueue();
   const [isRegister, setIsRegister] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    password: '',
-    role: 'user'
+    name: '', email: '', phone: '', password: '', role: 'user'
   });
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -19,6 +16,7 @@ const Login = () => {
   const handleAuth = async (e) => {
     e.preventDefault();
     setError('');
+    setIsLoading(true);
     try {
       if (isRegister) {
         await register(formData);
@@ -28,11 +26,18 @@ const Login = () => {
       navigate('/');
     } catch (err) {
       setError(err.response?.data?.message || 'Authentication failed');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const toggleMode = () => {
+    setIsRegister(!isRegister);
+    setError('');
   };
 
   return (
@@ -43,92 +48,73 @@ const Login = () => {
           <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>
             {isRegister ? 'Join QueueSmart today' : 'Log in to manage your appointments'}
           </p>
-          {error && <p style={{ color: 'var(--danger)', marginTop: '0.5rem', fontSize: '0.875rem' }}>{error}</p>}
+          {error && <p role="alert" style={{ color: 'var(--danger)', marginTop: '0.5rem', fontSize: '0.875rem' }}>{error}</p>}
         </div>
 
         <form onSubmit={handleAuth} style={{ display: 'grid', gap: '1.25rem' }}>
           {isRegister && (
             <>
               <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>Full Name</label>
+                <label htmlFor="name" style={labelStyle}>Full Name</label>
                 <div style={{ position: 'relative' }}>
-                  <UserIcon size={18} style={iconStyle} />
-                  <input name="name" type="text" placeholder="John Doe" required style={{ ...inputStyle, paddingLeft: '2.5rem' }} onChange={handleChange} />
+                  <UserIcon size={18} style={iconStyle} aria-hidden="true" />
+                  <input id="name" name="name" type="text" placeholder="John Doe" required disabled={isLoading} style={{ ...inputStyle, paddingLeft: '2.5rem' }} onChange={handleChange} />
                 </div>
               </div>
               <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>Phone Number</label>
+                <label htmlFor="phone" style={labelStyle}>Phone Number</label>
                 <div style={{ position: 'relative' }}>
-                  <Phone size={18} style={iconStyle} />
-                  <input name="phone" type="text" placeholder="+1 234 567 890" required style={{ ...inputStyle, paddingLeft: '2.5rem' }} onChange={handleChange} />
+                  <Phone size={18} style={iconStyle} aria-hidden="true" />
+                  <input id="phone" name="phone" type="text" placeholder="+1 234 567 890" required disabled={isLoading} style={{ ...inputStyle, paddingLeft: '2.5rem' }} onChange={handleChange} />
                 </div>
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>Account Type</label>
-                <select name="role" style={inputStyle} onChange={handleChange} value={formData.role}>
-                  <option value="user">User</option>
-                  <option value="admin">Admin</option>
-                </select>
               </div>
             </>
           )}
 
           <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>Email Address</label>
+            <label htmlFor="email" style={labelStyle}>Email Address</label>
             <div style={{ position: 'relative' }}>
-              <Mail size={18} style={iconStyle} />
-              <input name="email" type="email" placeholder="name@example.com" required style={{ ...inputStyle, paddingLeft: '2.5rem' }} onChange={handleChange} />
+              <Mail size={18} style={iconStyle} aria-hidden="true" />
+              <input id="email" name="email" type="email" placeholder="name@example.com" required disabled={isLoading} style={{ ...inputStyle, paddingLeft: '2.5rem' }} onChange={handleChange} />
             </div>
           </div>
 
           <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>Password</label>
+            <label htmlFor="password" style={labelStyle}>Password</label>
             <div style={{ position: 'relative' }}>
-              <Lock size={18} style={iconStyle} />
-              <input name="password" type="password" placeholder="••••••••" required style={{ ...inputStyle, paddingLeft: '2.5rem' }} onChange={handleChange} />
+              <Lock size={18} style={iconStyle} aria-hidden="true" />
+              <input id="password" name="password" type="password" placeholder="••••••••" required disabled={isLoading} style={{ ...inputStyle, paddingLeft: '2.5rem' }} onChange={handleChange} />
             </div>
           </div>
 
-          <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: '1rem' }}>
-            {isRegister ? 'Sign Up' : 'Sign In'}
-            <ArrowRight size={18} />
+          <button type="submit" className="btn-primary" disabled={isLoading} aria-busy={isLoading} style={{ width: '100%', justifyContent: 'center', marginTop: '1rem', opacity: isLoading ? 0.7 : 1 }}>
+            {isLoading ? (
+              <><Loader2 size={18} className="animate-spin" aria-hidden="true" /> {isRegister ? 'Creating Account...' : 'Signing In...'}</>
+            ) : (
+              <>{isRegister ? 'Sign Up' : 'Sign In'} <ArrowRight size={18} aria-hidden="true" /></>
+            )}
           </button>
         </form>
 
         <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.875rem' }}>
           <p style={{ color: 'var(--text-muted)' }}>
             {isRegister ? 'Already have an account?' : "Don't have an account?"} {' '}
-            <button
-              onClick={() => setIsRegister(!isRegister)}
-              style={{ background: 'none', color: 'var(--primary)', fontWeight: 600, padding: 0 }}
-            >
+            <button onClick={toggleMode} disabled={isLoading} style={{ background: 'none', color: 'var(--primary)', fontWeight: 600, padding: 0, cursor: isLoading ? 'default' : 'pointer' }}>
               {isRegister ? 'Sign In' : 'Register Now'}
             </button>
           </p>
         </div>
       </div>
+      <style>{`
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .animate-spin { animation: spin 1s linear infinite; }
+      `}</style>
     </div>
   );
 };
 
-const inputStyle = {
-  width: '100%',
-  padding: '0.75rem 1rem',
-  borderRadius: '0.5rem',
-  background: 'var(--glass-bg)',
-  border: '1px solid var(--surface-border)',
-  color: 'var(--text)',
-  fontSize: '1rem',
-  outline: 'none',
-  transition: 'border-color 0.2s'
-};
-
-const iconStyle = {
-  position: 'absolute',
-  left: '0.75rem',
-  top: '50%',
-  transform: 'translateY(-50%)',
-  color: 'var(--text-muted)'
-};
+const labelStyle = { display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-muted)' };
+const inputStyle = { width: '100%', padding: '0.75rem 1rem', borderRadius: '0.5rem', background: 'var(--glass-bg)', border: '1px solid var(--surface-border)', color: 'var(--text)', fontSize: '1rem', outline: 'none' };
+const iconStyle = { position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' };
 
 export default Login;
