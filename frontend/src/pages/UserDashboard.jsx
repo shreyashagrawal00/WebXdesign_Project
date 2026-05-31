@@ -1,10 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQueue } from '../context/QueueContext';
-import axios from 'axios';
 import { Clock, Users, Calendar, AlertCircle, RefreshCw } from 'lucide-react';
 
 const UserDashboard = () => {
-  const { appointments, servingToken, user, api } = useQueue();
+  const { appointments, servingToken, user, api, fetchInitialData } = useQueue();
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [cancellingId, setCancellingId] = useState(null);
+
+  const handleSync = async () => {
+    setIsSyncing(true);
+    try {
+      await fetchInitialData();
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
 
   if (!user) return <div className="container" style={{ padding: '4rem', textAlign: 'center' }}>Please log in to view your dashboard.</div>;
@@ -18,9 +28,21 @@ const UserDashboard = () => {
         <h1 style={{ fontSize: '2rem' }}>My Appointments</h1>
         <div style={{ display: 'flex', gap: '1rem' }}>
           <p style={{ color: 'var(--text-muted)' }}>Welcome, {user.name}</p>
-          <button className="glass-card" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem' }}>
-            <RefreshCw size={18} />
-            Sync Status
+          <button
+            onClick={handleSync}
+            disabled={isSyncing}
+            className="glass-card"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              padding: '0.5rem 1rem',
+              opacity: isSyncing ? 0.7 : 1,
+              cursor: isSyncing ? 'not-allowed' : 'pointer'
+            }}
+          >
+            <RefreshCw size={18} className={isSyncing ? 'animate-spin' : ''} />
+            {isSyncing ? 'Syncing...' : 'Sync Status'}
           </button>
         </div>
       </div>
@@ -55,7 +77,11 @@ const UserDashboard = () => {
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginTop: '2rem', textAlign: 'center' }}>
+            <div
+              role="status"
+              aria-live="polite"
+              style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginTop: '2rem', textAlign: 'center' }}
+            >
               <div className="glass-card" style={{ background: 'var(--surface)' }}>
                 <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>Now Serving</p>
                 <h3 style={{ fontSize: '2rem', color: 'var(--primary)' }}>#{activeAppt.slotId?.currentToken || servingToken}</h3>
@@ -136,24 +162,32 @@ const UserDashboard = () => {
                     {app.status === 'waiting' && (
                       <button
                         className="btn-primary"
-                        style={{ padding: '0.5rem 1rem', background: 'var(--danger)', fontSize: '0.75rem' }}
+                        disabled={cancellingId === app._id}
+                        style={{
+                          padding: '0.5rem 1rem',
+                          background: 'var(--danger)',
+                          fontSize: '0.75rem',
+                          opacity: cancellingId === app._id ? 0.7 : 1,
+                          cursor: cancellingId === app._id ? 'not-allowed' : 'pointer'
+                        }}
                         onClick={async () => {
                           if (window.confirm('Are you sure you want to cancel this appointment?')) {
+                            setCancellingId(app._id);
                             try {
-                              const response = await api.post(`/appointments/cancel/${app._id}`);
-                              console.log('Cancel response:', response.data);
-
+                              await api.post(`/appointments/cancel/${app._id}`);
                               alert('Appointment cancelled successfully!');
-                              window.location.reload(); // Simple reload to refresh state
+                              await fetchInitialData();
                             } catch (err) {
                               console.error('Cancel error:', err);
                               const errorMsg = err.response?.data?.message || err.response?.data?.error || 'Failed to cancel appointment';
                               alert(`Error: ${errorMsg}`);
+                            } finally {
+                              setCancellingId(null);
                             }
                           }
                         }}
                       >
-                        Cancel
+                        {cancellingId === app._id ? 'Cancelling...' : 'Cancel'}
                       </button>
                     )}
                   </div>
@@ -168,3 +202,15 @@ const UserDashboard = () => {
 };
 
 export default UserDashboard;
+
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  .animate-spin {
+    animation: spin 1s linear infinite;
+  }
+`;
+document.head.appendChild(style);
