@@ -1,0 +1,13 @@
+
+> queuesmart-root@1.0.0 start /app
+> node backend/server.js
+
+(node:44796) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Server running on port 5001
+Database empty, seeding initial data...
+Database seeded successfully with 6 services
+User connected: u7trOWfinjlEp_NAAAAB
+User disconnected
+User connected: 90Vbt8paYkXw5bN8AAAD
+User disconnected
