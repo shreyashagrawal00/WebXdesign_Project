@@ -1,26 +1,53 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQueue } from '../context/QueueContext';
-import axios from 'axios';
-import { Clock, Users, Calendar, AlertCircle, RefreshCw } from 'lucide-react';
+import { Clock, Calendar, AlertCircle, RefreshCw } from 'lucide-react';
 
 const UserDashboard = () => {
-  const { appointments, servingToken, user, api } = useQueue();
-
+  const { appointments, servingToken, user, api, fetchInitialData } = useQueue();
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [cancellingId, setCancellingId] = useState(null);
 
   if (!user) return <div className="container" style={{ padding: '4rem', textAlign: 'center' }}>Please log in to view your dashboard.</div>;
+
+  const handleSync = async () => {
+    setIsSyncing(true);
+    try {
+      await fetchInitialData();
+    } catch (err) {
+      alert('Sync failed: ' + (err.response?.data?.message || err.message));
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  const handleCancel = async (id) => {
+    if (!window.confirm('Are you sure you want to cancel this appointment?')) return;
+    setCancellingId(id);
+    try {
+      await api.post(`/appointments/cancel/${id}`);
+      await fetchInitialData();
+    } catch (err) {
+      alert('Failed: ' + (err.response?.data?.message || err.message));
+    } finally { setCancellingId(null); }
+  };
 
   const userAppointments = appointments.filter(a => a.status !== 'cancelled').reverse();
   const activeAppt = userAppointments.find(a => a.status === 'waiting');
 
   return (
     <div className="container animate-fade" style={{ paddingTop: '2rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
         <h1 style={{ fontSize: '2rem' }}>My Appointments</h1>
-        <div style={{ display: 'flex', gap: '1rem' }}>
+        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
           <p style={{ color: 'var(--text-muted)' }}>Welcome, {user.name}</p>
-          <button className="glass-card" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem' }}>
-            <RefreshCw size={18} />
-            Sync Status
+          <button
+            onClick={handleSync}
+            disabled={isSyncing}
+            className="glass-card"
+            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', opacity: isSyncing ? 0.7 : 1 }}
+          >
+            <RefreshCw size={18} className={isSyncing ? 'animate-spin' : ''} />
+            {isSyncing ? 'Syncing...' : 'Sync Status'}
           </button>
         </div>
       </div>
@@ -56,15 +83,15 @@ const UserDashboard = () => {
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginTop: '2rem', textAlign: 'center' }}>
-              <div className="glass-card" style={{ background: 'var(--surface)' }}>
+              <div className="glass-card" style={{ background: 'var(--surface)' }} role="status" aria-live="polite">
                 <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>Now Serving</p>
                 <h3 style={{ fontSize: '2rem', color: 'var(--primary)' }}>#{activeAppt.slotId?.currentToken || servingToken}</h3>
               </div>
-              <div className="glass-card" style={{ background: 'var(--surface)', border: '1px solid var(--primary)' }}>
+              <div className="glass-card" style={{ background: 'var(--surface)', border: '1px solid var(--primary)' }} role="status" aria-live="polite">
                 <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>Your Token</p>
                 <h3 style={{ fontSize: '2rem' }}>#{activeAppt.tokenNumber}</h3>
               </div>
-              <div className="glass-card" style={{ background: 'var(--surface)' }}>
+              <div className="glass-card" style={{ background: 'var(--surface)' }} role="status" aria-live="polite">
                 <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>Est. Wait</p>
                 <h3 style={{ fontSize: '2rem' }}>{Math.max(0, (activeAppt.tokenNumber - (activeAppt.slotId?.currentToken || servingToken)) * 10)}m</h3>
               </div>
@@ -136,24 +163,11 @@ const UserDashboard = () => {
                     {app.status === 'waiting' && (
                       <button
                         className="btn-primary"
-                        style={{ padding: '0.5rem 1rem', background: 'var(--danger)', fontSize: '0.75rem' }}
-                        onClick={async () => {
-                          if (window.confirm('Are you sure you want to cancel this appointment?')) {
-                            try {
-                              const response = await api.post(`/appointments/cancel/${app._id}`);
-                              console.log('Cancel response:', response.data);
-
-                              alert('Appointment cancelled successfully!');
-                              window.location.reload(); // Simple reload to refresh state
-                            } catch (err) {
-                              console.error('Cancel error:', err);
-                              const errorMsg = err.response?.data?.message || err.response?.data?.error || 'Failed to cancel appointment';
-                              alert(`Error: ${errorMsg}`);
-                            }
-                          }
-                        }}
+                        style={{ padding: '0.5rem 1rem', background: 'var(--danger)', fontSize: '0.75rem', opacity: cancellingId === app._id ? 0.7 : 1 }}
+                        disabled={cancellingId === app._id}
+                        onClick={() => handleCancel(app._id)}
                       >
-                        Cancel
+                        {cancellingId === app._id ? 'Cancelling...' : 'Cancel'}
                       </button>
                     )}
                   </div>
